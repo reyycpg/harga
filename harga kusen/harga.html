@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitung Harga Pintu atau Jendela</title>
+    <style>
+        /* styles.css */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        input, select {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hitung Harga Pintu atau Jendela</h1>
+        <form id="form-hitung">
+            <label for="tipe">Pilih Tipe:</label>
+            <select id="tipe" required>
+                <option value="pintu">Pintu</option>
+                <option value="jendela">Jendela</option>
+            </select>
+
+            <label for="panjang">Panjang (cm):</label>
+            <input type="number" id="panjang" required>
+
+            <label for="lebar">Lebar (cm):</label>
+            <input type="number" id="lebar" required>
+
+            <label for="kusen">Pilih Kusen:</label>
+            <select id="kusen" required>
+                <option value="3">Kusen 3 inci (Rp 130.000)</option>
+                <option value="4">Kusen 4 inci (Rp 150.000)</option>
+            </select>
+
+            <label for="kaca">Pilih Ketebalan Kaca:</label>
+            <select id="kaca" required>
+                <option value="5">Kaca 5mm (Rp 155.000/m²)</option>
+                <option value="6">Kaca 6mm (Rp 205.000/m²)</option>
+                <option value="8">Kaca 8mm (Rp 275.000/m²)</option>
+            </select>
+
+            <button type="submit">Hitung Harga</button>
+        </form>
+
+        <div id="result" class="result">
+            <h2>Harga: Rp <span id="harga">0</span></h2>
+        </div>
+    </div>
+
+    <script>
+        // script.js
+        document.getElementById('form-hitung').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Ambil nilai input dari form
+            let panjang = parseFloat(document.getElementById('panjang').value);
+            let lebar = parseFloat(document.getElementById('lebar').value);
+            let kusen = parseInt(document.getElementById('kusen').value);
+            let kaca = parseInt(document.getElementById('kaca').value);
+            let tipe = document.getElementById('tipe').value;
+
+            // Harga per meter
+            const hargaKusen3 = 130000;
+            const hargaKusen4 = 150000;
+            const hargaDaun = 170000;
+            const hargaKaca5mm = 155000;
+            const hargaKaca6mm = 205000;
+            const hargaKaca8mm = 275000;
+
+            // Pilih harga kusen berdasarkan input
+            let hargaKusen = kusen === 3 ? hargaKusen3 : hargaKusen4;
+
+            // Pilih harga kaca berdasarkan ketebalan
+            let hargaKaca = (kaca === 5) ? hargaKaca5mm : (kaca === 6) ? hargaKaca6mm : hargaKaca8mm;
+
+            let totalHarga = 0;
+
+            // Jika tipe adalah pintu
+            if (tipe === "pintu") {
+                // Menghitung harga kaca (P x L x harga kaca per meter)
+                let luasKaca = (panjang / 100) * (lebar / 100); // Konversi cm² ke m²
+                let hargaKacaTotal = luasKaca * hargaKaca;
+
+                // Menghitung harga kusen (2 x P + L) x harga kusen per meter
+                let panjangKusen = 2 * panjang + lebar; // dalam cm
+                let hargaKusenTotal = (panjangKusen / 100) * hargaKusen; // konversi cm ke meter
+
+                // Menghitung harga daun (2 x (P + L)) x harga daun per meter
+                let panjangDaun = 2 * (panjang + lebar); // dalam cm
+                let hargaDaunTotal = (panjangDaun / 100) * hargaDaun; // konversi cm ke meter
+
+                // Total harga untuk pintu
+                totalHarga = hargaKusenTotal + hargaDaunTotal + hargaKacaTotal;
+            } 
+
+            // Jika tipe adalah jendela
+            else if (tipe === "jendela") {
+                // Menghitung harga kusen (2 x P + L) x harga kusen per meter
+                let panjangKusen = 2 * panjang + lebar; // dalam cm
+                totalHarga = (panjangKusen / 100) * hargaKusen; // konversi cm ke meter
+            }
+
+            // Tampilkan hasil
+            document.getElementById('harga').textContent = totalHarga.toLocaleString();
+        });
+    </script>
+</body>
+</html>
